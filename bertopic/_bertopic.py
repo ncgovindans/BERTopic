@@ -218,6 +218,7 @@ class BERTopic:
         self.topic_labels_ = None
         self.custom_labels_ = None
         self.representative_docs_ = None
+        self.representative_docs_ids_ = None
         self.c_tf_idf_ = None
 
         # Private attributes for internal tracking purposes
@@ -2439,6 +2440,9 @@ class BERTopic:
 
         # Convert indices to documents
         self.representative_docs_ = {topic: [documents.iloc[doc_id].Document for doc_id in doc_ids]
+                                     for topic, doc_ids in
+                                     representative_docs.items()}
+        self.representative_docs_ids_ = {topic: [doc_id for doc_id in doc_ids]
                                      for topic, doc_ids in
                                      representative_docs.items()}
 
