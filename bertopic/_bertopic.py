@@ -231,7 +231,9 @@ class BERTopic:
     def fit(self,
             documents: List[str],
             embeddings: np.ndarray = None,
-            y: Union[List[int], np.ndarray] = None):
+            y: Union[List[int], np.ndarray] = None, 
+            doc_id: List[int] = None
+            ):
         """ Fit the models (Bert, UMAP, and, HDBSCAN) on a collection of documents and generate topics
 
         Arguments:
@@ -267,13 +269,15 @@ class BERTopic:
         topic_model = BERTopic().fit(docs, embeddings)
         ```
         """
-        self.fit_transform(documents, embeddings, y)
+        self.fit_transform(documents, embeddings, y, doc_id)
         return self
 
     def fit_transform(self,
                       documents: List[str],
                       embeddings: np.ndarray = None,
-                      y: Union[List[int], np.ndarray] = None) -> Tuple[List[int],
+                      y: Union[List[int], np.ndarray] = None,
+                      doc_id: List[int] = None
+                      ) -> Tuple[List[int],
                                                                        Union[np.ndarray, None]]:
         """ Fit the models on a collection of documents, generate topics, and return the docs with topics
 
@@ -322,10 +326,15 @@ class BERTopic:
         """
         check_documents_type(documents)
         check_embeddings_shape(embeddings, documents)
+        if doc_id != None:
+            documents = pd.DataFrame({"Document": documents,
+                                "ID": doc_id,
+                                "Topic": None})
+        else:
+            documents = pd.DataFrame({"Document": documents,
+                                    "Topic": None})
 
-        documents = pd.DataFrame({"Document": documents,
-                                  "ID": range(len(documents)),
-                                  "Topic": None})
+            documents["ID"] = documents.index
 
         # Extract embeddings
         if embeddings is None:
